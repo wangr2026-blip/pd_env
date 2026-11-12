@@ -1,0 +1,61 @@
+
+# BEGIN MPOWER IGNORE
+
+# Data should normally be outside the repository.
+/data/*
+!/data/README.md
+
+/mpower_storage/
+/mpower_data/
+/synapse_cache/
+**/synapse_cache/
+
+# Large audio files
+*.m4a
+*.mp3
+*.wav
+*.flac
+
+# Model weights and checkpoints
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Runtime logs
+/logs/
+
+# Credentials
+.env
+.env.*
+!.env.example
+.synapseConfig
+*synapse_token*
+
+# Python temporary files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# END MPOWER IGNORE
+
+# mPower research data
+/mpower_data/
+/mpower_storage/
+/data/*
+!/data/README.md
+
+*.m4a
+*.wav
+*.flac
+
+# Local model artifacts
+*.pt
+*.pth
+*.ckpt
+
+# Slurm logs and secrets
+/logs/
+.env
+*synapse_token*
+__pycache__/
