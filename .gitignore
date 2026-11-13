@@ -59,3 +59,31 @@ __pycache__/
 .env
 *synapse_token*
 __pycache__/
+
+# Restricted derived metadata, caches, and executed research outputs
+/results/
+/.mpower_outputs/
+*.ipynb_checkpoints/
+/.mpower_venv/
+/.mpower_phase1_environment.tar.gz
+
+# Local frozen-benchmark environment (model/data artifacts remain outside repo)
+/.benchmark_venv/
+
+# Private derived arrays, caches, checkpoints and accidental storage roots
+*.parquet
+*.npz
+*.npy
+*.joblib
+*.pkl
+*.pickle
+/pd_data/
+/models/
+/activations/
+/segments/
+/runs/
+/handoff/
+/planning/
+/reports/
+core
+core.*

@@ -64,3 +64,6 @@ Raw participant metadata, audio, and access tokens
 must not be committed to Git.
 
 Use only institutionally approved data storage.
+
+For the complete sibling `pd_env` / `pd_data` structure, three environment roots,
+private output meanings and cloud access limitations, see [pd_data context](PD_DATA_CONTEXT.md).

@@ -1,0 +1,17 @@
+# Python 3.10/3.11; downloader dependencies remain separate.
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.14.1
+PyYAML==6.0.2
+pyarrow==19.0.1
+librosa==0.10.2.post1
+praat-parselmouth==0.4.5
+opensmile==2.5.1
+matplotlib==3.9.4
+soundfile==0.13.1
+nbformat==5.10.4
+nbclient==0.10.2
+ipykernel==6.29.5
+imageio-ffmpeg==0.6.0
+pytest==8.3.5
+statsmodels==0.14.4

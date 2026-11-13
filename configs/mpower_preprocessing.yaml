@@ -1,0 +1,45 @@
+# Paths are resolved from environment; derived participant data stay outside Git.
+data_root_env: MPOWER_DATA_ROOT
+output_root_env: MPOWER_OUTPUT_ROOT
+metadata: voice_activity/Voice_Activity.csv
+demographics: demographics/Demographics.csv
+columns:
+  participant: healthCode
+  recording: recordId
+  timestamp: createdOn
+  audio: audio_path
+  handle: audio_audio.m4a
+  medication: medTimepoint
+  # Unavailable in the inspected Voice Activity table. Configure only after auditing.
+  diagnosis: null
+  age: null
+  sex: null
+# Explicit value mappings; medication is never used as a diagnosis proxy.
+diagnosis_values:
+  pd: ['true']
+  control: ['false']
+seed: 20261112
+pilot_size: 120
+workers: 2
+sample_rate: 16000
+max_decode_seconds: 180
+pitch:
+  floor: 60
+  ceiling: 500
+  max_period_factor: 1.3
+  max_amplitude_factor: 1.6
+  sensitivity_ranges: [[50, 400], [75, 600]]
+qc:
+  frame_ms: 30
+  hop_ms: 10
+  near_silence_rms: 0.0001
+  low_amplitude_rms: 0.001
+  energy_db_below_peak: 35
+  min_duration_s: 2
+  min_voiced_s: 2
+  clipping_amplitude: 0.999
+  clipping_fraction: 0.01
+  estimated_snr_db: 10
+  min_pitch_fraction: 0.5
+split_fractions: [0.70, 0.15, 0.15]
+age_restriction: [50, 80]

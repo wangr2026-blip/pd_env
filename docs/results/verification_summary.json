@@ -1,0 +1,27 @@
+{
+  "snapshot_local_date": "2026-11-12",
+  "timezone": "America/New_York",
+  "scope": "Aggregate execution status only; no participant-level data",
+  "verification": {
+    "full_suite": {"passed": 28, "warnings": 3, "duration_seconds": 285.53},
+    "final_targeted_checks": {"passed": 19, "warnings": 3, "duration_seconds": 56.74},
+    "targeted_checks_overlap_full_suite": true,
+    "real_random_architecture_checks": {"passed": 3, "recordings_per_model": 6},
+    "fixed_pilot_data_smoke": {"status": "passed", "selected": 28, "decoded": 6}
+  },
+  "pretrained_models": {
+    "MIT/ast-finetuned-audioset-10-10-0.4593": {"loaded": false, "reason": "Network blocked; requested assets not cached"},
+    "openai/whisper-small": {"loaded": false, "reason": "Network blocked; requested assets not cached"},
+    "facebook/wav2vec2-base-960h": {"loaded": false, "reason": "Network blocked; requested assets not cached"}
+  },
+  "pretrained_baselines_completed": 0,
+  "latest_new_slurm_submission": {"job_id_returned": false, "reason": "Controller hostname unresolved; retrying submission client interrupted"},
+  "fixed_pilot": {
+    "split_status": "provisional canonical assignments",
+    "train": {"pd": 25, "control": 15},
+    "val": {"pd": 5, "control": 3},
+    "test": {"pd": 5, "control": 3}
+  },
+  "weighting": {"protocol_documented": true, "empirical_weights_fitted": false, "weighted_training_implemented": false},
+  "predictive_performance_validated": false
+}

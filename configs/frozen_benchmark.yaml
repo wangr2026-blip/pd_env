@@ -1,0 +1,43 @@
+seed: 20261112
+threads: 2
+device: auto
+mixed_precision: true
+data_root_env: MPOWER_DATA_ROOT
+eda_root_env: MPOWER_OUTPUT_ROOT
+benchmark_root_env: MPOWER_BENCHMARK_ROOT
+# Optional explicit canonical manifest, relative to EDA root; null auto-discovers.
+manifest: null
+cohort: B
+quality:
+  min_duration_s: 2
+  reject_flags: [flag_near_silent, flag_short]
+audio:
+  sample_rate: 16000
+  segment_seconds: 5
+  hop_seconds: 5
+  max_decode_seconds: 180
+  max_segments: 12
+batch_size: 2
+participant_aggregation: mean  # mean or median recording probabilities
+pooling: mean  # mean, statistical, attention (learned on training tokens only)
+layers: [-1]  # hidden states cached per segment for later probes/PCA/SAEs
+heads: [logistic, mlp]
+head:
+  max_iter: 300
+  hidden_dim: 64
+  epochs: 30
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 32
+split_fractions: [0.70, 0.15, 0.15]
+smoke_participants_per_class: 6
+models:
+  ast:
+    checkpoint: MIT/ast-finetuned-audioset-10-10-0.4593
+    revision: main
+  whisper:
+    checkpoint: openai/whisper-small
+    revision: main
+  wav2vec2:
+    checkpoint: facebook/wav2vec2-base-960h
+    revision: main
