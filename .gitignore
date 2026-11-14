@@ -1,29 +1,42 @@
-
-# BEGIN MPOWER IGNORE
-
-# Data should normally be outside the repository.
+# Private storage and local runtime artifacts
 /data/*
 !/data/README.md
-
 /mpower_storage/
 /mpower_data/
+/pd_data/
 /synapse_cache/
 **/synapse_cache/
+/results/
+/.mpower_outputs/
+/models/
+/activations/
+/segments/
+/runs/
+/handoff/
+/planning/
+/reports/
+/logs
+/slurm/
+/environments/
+/.mpower_venv
+/.benchmark_venv
+/.mpower_phase1_environment.tar.gz
 
-# Large audio files
+# Research data, weights, arrays, and serialized estimators
 *.m4a
 *.mp3
 *.wav
 *.flac
-
-# Model weights and checkpoints
 *.pt
 *.pth
 *.ckpt
 *.safetensors
-
-# Runtime logs
-/logs/
+*.parquet
+*.npz
+*.npy
+*.joblib
+*.pkl
+*.pickle
 
 # Credentials
 .env
@@ -32,58 +45,10 @@
 .synapseConfig
 *synapse_token*
 
-# Python temporary files
+# Python and notebook runtime files
 __pycache__/
 *.py[cod]
 .pytest_cache/
-
-# END MPOWER IGNORE
-
-# mPower research data
-/mpower_data/
-/mpower_storage/
-/data/*
-!/data/README.md
-
-*.m4a
-*.wav
-*.flac
-
-# Local model artifacts
-*.pt
-*.pth
-*.ckpt
-
-# Slurm logs and secrets
-/logs/
-.env
-*synapse_token*
-__pycache__/
-
-# Restricted derived metadata, caches, and executed research outputs
-/results/
-/.mpower_outputs/
-*.ipynb_checkpoints/
-/.mpower_venv/
-/.mpower_phase1_environment.tar.gz
-
-# Local frozen-benchmark environment (model/data artifacts remain outside repo)
-/.benchmark_venv/
-
-# Private derived arrays, caches, checkpoints and accidental storage roots
-*.parquet
-*.npz
-*.npy
-*.joblib
-*.pkl
-*.pickle
-/pd_data/
-/models/
-/activations/
-/segments/
-/runs/
-/handoff/
-/planning/
-/reports/
+.ipynb_checkpoints/
 core
 core.*

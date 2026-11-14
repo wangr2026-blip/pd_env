@@ -17,6 +17,8 @@ projects/
     docs/                           methods, aggregate status, plans and handoff
     requirements-*.txt
   pd_data/                          private HPC storage; not in Git
+    environments/                   local Python environments and worker archive
+    slurm/{jobs,logs}/               submitted templates and private runtime logs
     README.md                       local storage guide
     mpower/                         MPOWER_DATA_ROOT
       voice_activity/
@@ -65,7 +67,11 @@ baseline demographics with explicit identity, label and cardinality checks.
 `MPOWER_PYTHON` selects the EDA Python executable. `MPOWER_BENCHMARK_PYTHON` selects
 the frozen-model batch executable, and `MPOWER_BENCHMARK_CONFIG` can select a
 fixed private pilot config. The local `.mpower_venv` and `.benchmark_venv` are
-ignored host-specific environments, not portable artifacts committed to Git.
+ignored compatibility symlinks to `pd_data/environments/`, not portable artifacts
+committed to Git. Clones do not contain these links or environments. The ignored
+`logs` link points to `pd_data/slurm/logs/legacy/`. New jobs use
+`bash scripts/submit_mpower.sh TEMPLATE_NAME`, with `MPOWER_SLURM_ROOT` set to
+`/approved/storage/pd_data/slurm`; templates stay versioned in `scripts/`.
 
 ## What each output means
 
@@ -110,3 +116,7 @@ and the configured DNS server returned `Operation not permitted`; Hugging Face,
 PyPI and the Slurm controller could not resolve. The connected GitHub service
 has separate connectivity, allowing publication of reviewed repository files.
 This does not grant Python downloads or shell Git/Slurm network access.
+
+The network observations above describe the earlier sandbox session. During the
+November 13 reorganization, Slurm read access succeeded outside the sandbox;
+see [the audit](REORGANIZATION_AUDIT.md). This does not verify model downloads.

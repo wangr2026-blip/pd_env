@@ -99,3 +99,16 @@ Slurm script:
     scripts/download_mpower.slurm
 
 Do not download the full dataset onto a developer laptop.
+
+### Repository versus HPC runtime
+
+This checkout contains portable code, configs, Slurm templates, synthetic tests,
+and aggregate documentation. Read docs/PD_DATA_CONTEXT.md and
+docs/REORGANIZATION_AUDIT.md before assuming that a documented run completed.
+A laptop/cloud clone has no pd_data, HPC environments, private outputs, or logs.
+Use .env.example for variable names, never commit the filled .env.
+Local ignored environment/log links are compatibility conveniences on the HPC.
+Use scripts/submit_mpower.sh to place submitted Slurm snapshots and logs under
+MPOWER_SLURM_ROOT outside Git. Keep source templates in scripts/ so remote agents
+can maintain them. Raw and derived participant data remain private regardless
+of file size.

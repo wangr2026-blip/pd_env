@@ -13,7 +13,7 @@ Start with [current results and blockers](docs/CURRENT_RESULTS.md),
 
 ```text
 configs/       EDA/QC and unified frozen-model YAML
-scripts/       download/linkage, EDA, benchmark CLIs and Slurm wrappers
+scripts/       download/linkage, EDA, benchmark CLIs and versioned Slurm templates
 src/
   data/        canonical manifests, splits, decoding and segmentation
   models/      frozen AST, Whisper encoder and wav2vec2 backbone
@@ -32,6 +32,8 @@ docs/         methods, aggregate results, weighting plan and run history
 pd_data/mpower/             source recordings and metadata
 pd_data/mpower_phase1/      canonical manifests, QC/features, EDA and archives
 pd_data/mpower_benchmarks/  model caches, activations, private runs and evidence
+pd_data/environments/       HPC Python environments and worker archive
+pd_data/slurm/              submitted job snapshots and runtime logs
 ```
 
 Use distinct approved paths outside Git:
@@ -40,6 +42,7 @@ Use distinct approved paths outside Git:
 export MPOWER_DATA_ROOT=/approved/storage/pd_data/mpower
 export MPOWER_OUTPUT_ROOT=/approved/storage/pd_data/mpower_phase1
 export MPOWER_BENCHMARK_ROOT=/approved/storage/pd_data/mpower_benchmarks
+export MPOWER_SLURM_ROOT=/approved/storage/pd_data/slurm
 ```
 
 See [data layout](docs/data_layout.md), [observed schema](docs/voice_activity_schema.md)
@@ -70,6 +73,16 @@ EDA/QC batch entry points are `scripts/preprocess_mpower.slurm` and
 Set `MPOWER_PYTHON` or `MPOWER_BENCHMARK_PYTHON` to a complete environment for the
 selected job. Do not assume the existing Conda environment named `pd_env` has
 all benchmark dependencies. Large workloads belong in Slurm allocations.
+Copy `.env.example` to `.env` and set approved HPC paths. Submit with:
+
+```bash
+bash scripts/submit_mpower.sh frozen_benchmark --smoke-test
+```
+
+The helper keeps job snapshots and logs in
+`MPOWER_SLURM_ROOT` while running source code from this checkout. Use standard
+`SBATCH_*` environment variables for scheduler options. See the
+[reorganization audit](docs/REORGANIZATION_AUDIT.md) for the latest verified status.
 
 ## Current status
 

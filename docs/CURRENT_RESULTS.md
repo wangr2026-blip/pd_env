@@ -1,7 +1,8 @@
 # Current results and execution limits
 
-Snapshot: November 12, 2026 local time; overnight UTC evidence files are dated
-November 13. These are aggregate execution/QC findings, not a claim of validated
+Snapshot: November 13, 2026. Historical test evidence is from November 12
+local time / November 13 UTC; the HPC cleanup audit is newer. These are aggregate
+execution/QC findings, not a claim of validated
 clinical predictive performance. Private evidence remains in `pd_data`.
 
 ## Verification
@@ -41,11 +42,13 @@ The pilot is sufficient for an exploratory execution run once weights are
 available. Eight held-out participants cannot support precise predictive
 conclusions. Existing splits remain provisional pending full duplicate/QC review.
 
-The latest inspected full acoustic checkpoint contained 6,016 attempted rows:
-5,991 worker errors, 16 other errors and nine successes. Error logs implicated
+The November 13 full acoustic checkpoint contained 31,040 attempted rows:
+30,990 worker errors, 41 other errors and nine successes. Error logs implicated
 Librosa/Numba zero-crossing extraction. These are processing failures and do not
 establish the quality of participant audio. This code path is not used by the
-frozen encoder runner. Live Slurm state and allocations could not be verified.
+frozen encoder runner. Outside-sandbox Slurm queries on November 13 verified that
+job 27498642 timed out after 24 hours; no mPower jobs were active. See the
+[reorganization audit](REORGANIZATION_AUDIT.md).
 
 ## Weighting findings and status
 

@@ -15,6 +15,7 @@ python -m pip install -r requirements-benchmark.txt
 export MPOWER_DATA_ROOT=/approved/storage/mpower
 export MPOWER_OUTPUT_ROOT=/approved/storage/mpower_phase1
 export MPOWER_BENCHMARK_ROOT=/approved/storage/mpower_benchmarks
+export MPOWER_SLURM_ROOT=/approved/storage/slurm
 ```
 
 Choose three distinct directories outside Git. Benchmark outputs must not overlap
@@ -55,12 +56,12 @@ For batch execution, export the three storage variables, activate the intended
 environment (or set `MPOWER_BENCHMARK_PYTHON`), then:
 
 ```bash
-sbatch scripts/frozen_benchmark.slurm --smoke-test
-MPOWER_MODEL=whisper sbatch scripts/frozen_benchmark.slurm
+bash scripts/submit_mpower.sh frozen_benchmark --smoke-test
+MPOWER_MODEL=whisper bash scripts/submit_mpower.sh frozen_benchmark
 ```
 
 Defaults request 2 CPUs and 16 GB, with no GPU. When GPU capacity is available,
-add the institution's GPU partition and `--gres=gpu:1` at submission. `device:
+set `SBATCH_PARTITION` to the institution's GPU partition and `SBATCH_GRES=gpu:1` before submission. `device:
 auto` selects CUDA and enables float16 autocast only on CUDA. Benchmark jobs do
 not submit or cancel EDA jobs. Avoid scheduling a full benchmark until capacity
 is known and all model smoke checks pass.
