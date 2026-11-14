@@ -11,7 +11,7 @@ fi
 TEMPLATE="$1"
 shift
 case "$TEMPLATE" in
-    download_mpower|download_mpower_demographics|preprocess_mpower|linked_pilot_mpower|full_mpower|frozen_benchmark) ;;
+    download_mpower|download_mpower_demographics|download_pretrained_models|preprocess_mpower|linked_pilot_mpower|full_mpower|frozen_benchmark) ;;
     *) echo "Unknown Slurm template: $TEMPLATE" >&2; exit 2 ;;
 esac
 # Resolve symlinks before validating; never create job outputs inside the checkout.

@@ -1,0 +1,15 @@
+{
+  "description": "Public checkpoint assets for ten-second sustained-vowel experiments; this is a download inventory, not a runnable benchmark config.",
+  "models": {
+    "ast_audioset": "MIT/ast-finetuned-audioset-10-10-0.4593",
+    "wav2vec2_base_960h": "facebook/wav2vec2-base-960h",
+    "wav2vec2_large_robust": "facebook/wav2vec2-large-robust",
+    "whisper_small": "openai/whisper-small",
+    "whisper_medium": "openai/whisper-medium",
+    "whisper_large_v3": "openai/whisper-large-v3",
+    "wavlm_base_plus": "microsoft/wavlm-base-plus",
+    "wavlm_large": "microsoft/wavlm-large",
+    "hubert_large": "facebook/hubert-large-ll60k",
+    "hear_pytorch": "google/hear-pytorch"
+  }
+}

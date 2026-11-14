@@ -9,6 +9,11 @@ Start with [current results and blockers](docs/CURRENT_RESULTS.md),
 [pd_data context](docs/PD_DATA_CONTEXT.md), and
 [the consolidated run history](docs/MPOWER_RUN_HISTORY_AND_WEIGHTING.md).
 
+To obtain pretrained weights on another machine, follow the
+[step-by-step download and Slurm guide](docs/DOWNLOAD_PRETRAINED_MODELS.md).
+It downloads nine public checkpoints at pinned revisions and verifies them
+without requiring PyTorch, Hugging Face login or access to participant data.
+
 ## Repository structure
 
 ```text
@@ -97,6 +102,12 @@ loaded: shell network connections were denied, and the assets were not cached.
 No pretrained baseline experiment completed. The fixed pilot has 56 participants
 with provisional participant-disjoint assignments and only eight test people.
 Smoke metrics are execution checks, not validated predictive performance.
+
+Nine public checkpoints have since been downloaded and hash-verified in a
+separate local checkout (12.02 GB). This does not establish availability on HPC
+or successful model inference. The [download guide](docs/DOWNLOAD_PRETRAINED_MODELS.md)
+reproduces that asset download; the [input guide](docs/PRETRAINED_MODELS_AND_INPUTS.md)
+explains ten-second vowel inputs and the remaining runner integration work.
 
 The full acoustic EDA snapshot also contains substantial worker failures, which
 must be separated from audio quality. The legacy SNR-named energy proxy is not
