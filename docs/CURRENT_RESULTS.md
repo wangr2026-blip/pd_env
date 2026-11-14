@@ -1,16 +1,21 @@
 # Current results and execution limits
 
-Snapshot: November 13, 2026. Historical test evidence is from November 12
+Snapshot: November 14, 2026. Historical test evidence is from November 12
 local time / November 13 UTC; the HPC cleanup audit is newer. These are aggregate
 execution/QC findings, not a claim of validated
 clinical predictive performance. Private evidence remains in `pd_data`.
 
-The [acoustic extraction repair](EXTRACTION_RELIABILITY.md) passed a newer
-compute-node validation: 13 preprocessing tests and four 32-recording runs with
-1/4/8/16 workers. All 184 core features were retained. Full retry job 27554188
-was observed running with 16 workers and the partition's 45-day maximum; it is
-not yet a completed full-dataset result. Historical failure counts below refer
-to the preserved failed checkpoint, not the retry.
+Full preprocessing retry **27554188 completed successfully** in 3:22:34:
+64,973 of 65,022 recordings decoded and extracted; 49 failed. Full-scope cohorts,
+reports and the executed notebook were generated (14 executed code cells,
+no saved errors). All 49 failed files match Synapse source sizes and MD5
+checksums; normal and error-tolerant decoding produced no audio samples.
+See the [failed-recording audit](FAILED_AUDIO_AUDIT.md).
+
+The [acoustic extraction repair](EXTRACTION_RELIABILITY.md) had passed 13
+preprocessing tests and four 32-recording runs with 1/4/8/16 workers. The
+historical failed checkpoint described below remains preserved as evidence;
+it has been superseded by the completed retry for current acoustic results.
 
 ## Verification
 
@@ -30,7 +35,19 @@ tests. AST frontend warnings concern Mel filters. The integration tests use
 explicitly named `test-only/random-*` backbones. Their metrics must not be cited
 as pretrained-model performance.
 
-## Data and pilot readiness
+## Full acoustic cohorts
+
+| Cohort | Recordings | Participants |
+|---|---:|---:|
+| A: labeled, successfully decoded | 62,123 | 4,854 |
+| B: additional phonation/QC criteria | 61,651 | 4,830 |
+| C: age/gender-matched sensitivity cohort | 22,820 | 838 |
+
+Assignments remain provisional pending full near-duplicate review and selection-
+bias assessment. The completed extraction does not constitute pretrained-model
+training or validated diagnostic performance.
+
+## Data and historical pilot readiness
 
 The source has 65,022 recordings from 5,826 participants. Primary participant
 labels: 970 PD, 3,890 controls, 864 unknown and 102 conflicting. Diagnosis is

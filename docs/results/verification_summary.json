@@ -1,5 +1,5 @@
 {
-  "snapshot_local_date": "2026-11-13",
+  "snapshot_local_date": "2026-11-14",
   "timezone": "America/New_York",
   "scope": "Aggregate execution status only; no participant-level data",
   "verification": {
@@ -93,8 +93,26 @@
     "parallel_numeric_agreement": true,
     "prior_pilot_agreement_recordings": 8,
     "production_retry_job_id": "27554188",
-    "production_retry_completed": false,
+    "production_retry_completed": true,
     "time_limit_days": 45,
-    "production_retry_state_at_publication": "RUNNING"
+    "production_retry_state_at_publication": "COMPLETED",
+    "production_elapsed": "03:22:34",
+    "production_recordings": 65022,
+    "production_features_ok": 64973,
+    "production_failed_files": 49
+  },
+  "failed_audio_audit": {
+    "job_id": "27562918",
+    "state": "COMPLETED",
+    "recordings": 49,
+    "missing_metadata_and_audio_payload": 19,
+    "undecodable_alac_payload": 30,
+    "strict_decoded_samples": 0,
+    "tolerant_decoded_samples": 0,
+    "source_size_matches": 49,
+    "source_md5_matches": 49,
+    "diagnostic_tests_passed": 3,
+    "source_files_modified": false,
+    "canonical_outputs_modified": false
   }
 }

@@ -109,8 +109,10 @@ or successful model inference. The [download guide](docs/DOWNLOAD_PRETRAINED_MOD
 reproduces that asset download; the [input guide](docs/PRETRAINED_MODELS_AND_INPUTS.md)
 explains ten-second vowel inputs and the remaining runner integration work.
 
-The full acoustic EDA snapshot also contains substantial worker failures, which
-must be separated from audio quality. The legacy SNR-named energy proxy is not
+Full acoustic preprocessing completed: 64,973/65,022 recordings succeeded.
+The remaining 49 files match their malformed/empty Synapse source objects;
+see the [failure audit](docs/FAILED_AUDIO_AUDIT.md). The legacy SNR-named energy
+proxy is not
 a validated noise measurement. See [execution status](docs/FROZEN_BENCHMARK_STATUS.md)
 and [machine-readable aggregate summary](docs/results/verification_summary.json).
 
