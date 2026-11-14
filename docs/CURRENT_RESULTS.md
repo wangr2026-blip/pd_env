@@ -5,6 +5,13 @@ local time / November 13 UTC; the HPC cleanup audit is newer. These are aggregat
 execution/QC findings, not a claim of validated
 clinical predictive performance. Private evidence remains in `pd_data`.
 
+The [acoustic extraction repair](EXTRACTION_RELIABILITY.md) passed a newer
+compute-node validation: 13 preprocessing tests and four 32-recording runs with
+1/4/8/16 workers. All 184 core features were retained. Full retry job 27554188
+was observed running with 16 workers and the partition's 45-day maximum; it is
+not yet a completed full-dataset result. Historical failure counts below refer
+to the preserved failed checkpoint, not the retry.
+
 ## Verification
 
 | Check | Result |
@@ -42,7 +49,7 @@ The pilot is sufficient for an exploratory execution run once weights are
 available. Eight held-out participants cannot support precise predictive
 conclusions. Existing splits remain provisional pending full duplicate/QC review.
 
-The November 13 full acoustic checkpoint contained 31,040 attempted rows:
+The preserved failed full acoustic checkpoint contained 31,040 attempted rows:
 30,990 worker errors, 41 other errors and nine successes. Error logs implicated
 Librosa/Numba zero-crossing extraction. These are processing failures and do not
 establish the quality of participant audio. This code path is not used by the

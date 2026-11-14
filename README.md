@@ -84,6 +84,10 @@ The helper keeps job snapshots and logs in
 `SBATCH_*` environment variables for scheduler options. See the
 [reorganization audit](docs/REORGANIZATION_AUDIT.md) for the latest verified status.
 
+See the [extraction repair and parallel benchmarks](docs/EXTRACTION_RELIABILITY.md)
+and the [complete acoustic feature catalog](docs/ACOUSTIC_FEATURES.md) for the
+184 core measurements and pilot sensitivity checks.
+
 ## Current status
 
 The full regression suite passed 28 tests; 19 overlapping targeted checks were

@@ -76,5 +76,25 @@
       "successful_rows": 9
     },
     "pretrained_downloads_retried": false
+  },
+  "acoustic_extraction_repair": {
+    "validation_job_id": "27553976",
+    "validation_state": "COMPLETED",
+    "preprocessing_tests_passed": 13,
+    "real_recordings_per_run": 32,
+    "previous_worker_failures_in_sample": 24,
+    "core_features": 184,
+    "workers_elapsed_s": {
+      "1": 26.09699,
+      "4": 8.98003,
+      "8": 7.97721,
+      "16": 5.93142
+    },
+    "parallel_numeric_agreement": true,
+    "prior_pilot_agreement_recordings": 8,
+    "production_retry_job_id": "27554188",
+    "production_retry_completed": false,
+    "time_limit_days": 45,
+    "production_retry_state_at_publication": "RUNNING"
   }
 }

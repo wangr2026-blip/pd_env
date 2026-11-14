@@ -3,11 +3,39 @@
 
 Run through inspect_audio.py --stage features to share decoding and checkpoints.
 """
+from functools import lru_cache
+
 import numpy as np
 import librosa
 import parselmouth
 from parselmouth.praat import call
 import opensmile
+
+
+def zero_crossing_rate_numpy(y, frame_length=1024, hop_length=160):
+    """Librosa's default mono ZCR semantics without its native Numba gufunc.
+
+    Edge centering, threshold=1e-10, zero_pos=True, pad=False. Prefix sums
+    count transitions within each frame in O(samples), without a framed copy.
+    """
+    y = np.asarray(y)
+    if y.ndim != 1 or not y.size or not np.isfinite(y).all():
+        raise ValueError('ZCR requires nonempty finite mono audio')
+    if frame_length < 1 or hop_length < 1:
+        raise ValueError('Frame and hop lengths must be positive')
+    padded = np.pad(y, (frame_length // 2, frame_length // 2), mode='edge')
+    negative = (padded < 0) & (np.abs(padded) > 1e-10)
+    cumulative = np.r_[0, np.cumsum(negative[1:] != negative[:-1])]
+    starts = np.arange(0, len(padded) - frame_length + 1, hop_length)
+    return (cumulative[starts + frame_length - 1] - cumulative[starts]) / frame_length
+
+
+@lru_cache(maxsize=1)
+def smile_extractor():
+    """One frontend per worker, reused across recordings."""
+    return opensmile.Smile(feature_set=opensmile.FeatureSet.eGeMAPSv02,
+                           feature_level=opensmile.FeatureLevel.Functionals,
+                           num_workers=1)
 
 
 def praat(y, sr, settings, prefix='praat_full__'):
@@ -69,7 +97,7 @@ def extract(y, sr, cfg):
         stable,_ = praat(seg,sr,cfg['pitch'],prefix='praat_stable__')
         features.update(stable)
         statuses['praat_stable']='ok'
-    smile = opensmile.Smile(feature_set=opensmile.FeatureSet.eGeMAPSv02,feature_level=opensmile.FeatureLevel.Functionals,num_workers=1)
+    smile = smile_extractor()
     try:
         eg = smile.process_signal(y,sr)
         if len(eg.columns)!=88:
@@ -84,7 +112,7 @@ def extract(y, sr, cfg):
             'bandwidth_hz':librosa.feature.spectral_bandwidth(S=spec,sr=sr)[0],
             'rolloff_hz':librosa.feature.spectral_rolloff(S=spec,sr=sr)[0],
             'flatness':librosa.feature.spectral_flatness(S=spec)[0],
-            'zcr':librosa.feature.zero_crossing_rate(y,frame_length=1024,hop_length=160)[0],
+            'zcr':zero_crossing_rate_numpy(y,frame_length=1024,hop_length=160),
             'rms':librosa.feature.rms(S=spec,frame_length=1024)[0],
             'flux':np.sqrt(np.mean(np.diff(spec,axis=1)**2,axis=0))}
         # Spectral contrast requires all subbands below Nyquist.

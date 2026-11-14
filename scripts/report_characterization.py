@@ -28,14 +28,16 @@ def dictionary(features):
         if '__' not in col or col.startswith('status__'): continue
         namespace=col.split('__')[0]
         unit='dimensionless'
-        if 'hz' in col.lower(): unit='Hz'
+        if 'nhr_from_mean_hnr' in col: unit='dimensionless'
+        elif 'hz' in col.lower(): unit='Hz'
         elif 'db' in col.lower() or 'hnr' in col: unit='dB'
         elif 'absolute_s' in col: unit='s'
+        elif 'contrast_' in col: unit='dB'
         elif 'mfcc' in col: unit='cepstral coefficient'
         elif any(k in col for k in ('rms','flux')): unit='linear amplitude / FFT scale'
         if namespace=='egemaps': unit='see openSMILE eGeMAPSv02 descriptor definition; full standard name preserved'
         interval='longest contiguous Praat-pitched interval >=0.5 s' if namespace=='praat_stable' else 'full recording'
-        rows.append({'feature':col,'namespace':namespace,'algorithm': 'Praat via Parselmouth' if namespace.startswith('praat') or namespace.startswith('pitch_') or namespace.startswith('trim_') else 'openSMILE eGeMAPSv02' if namespace=='egemaps' else 'librosa STFT 1024/hop160; MFCC13',
+        rows.append({'feature':col,'namespace':namespace,'algorithm': 'Praat via Parselmouth' if namespace.startswith('praat') or namespace.startswith('pitch_') or namespace.startswith('trim_') else 'openSMILE eGeMAPSv02' if namespace=='egemaps' else 'librosa STFT 1024/hop160; MFCC13; NumPy ZCR',
             'units':unit,'interval':interval,'sample_rate_hz':16000,
             'validity':'finite; undefined retained as missing; perturbation requires tracked periods',
             'clinical_reference_range':'not established for this cohort'})

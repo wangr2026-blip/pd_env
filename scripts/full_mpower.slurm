@@ -2,7 +2,9 @@
 #SBATCH --job-name=mpower_full_phase1
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=48G
-#SBATCH --time=24:00:00
+#SBATCH --time=45-00:00:00
+# defq maximum: --time=0 was accepted but left the job pending for PartitionTimeLimit.
+# Override with SBATCH_TIMELIMIT if the target cluster has a different maximum.
 #SBATCH --output=logs/mpower_full_%j.out
 #SBATCH --error=logs/mpower_full_%j.err
 set -euo pipefail

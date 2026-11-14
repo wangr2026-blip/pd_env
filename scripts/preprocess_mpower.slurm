@@ -20,7 +20,8 @@ if [[ -n "${MPOWER_ENV_ARCHIVE:-}" ]]; then
 fi
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 export MPLCONFIGDIR="$MPOWER_OUTPUT_ROOT/cache/matplotlib"
-export NUMBA_CACHE_DIR="$MPOWER_OUTPUT_ROOT/cache/numba"
+# Native compilation caches must not be shared across heterogeneous nodes.
+export NUMBA_CACHE_DIR="${SLURM_TMPDIR:-/tmp}/mpower_numba_${SLURM_JOB_ID:-$$}"
 export JUPYTER_RUNTIME_DIR="$MPOWER_OUTPUT_ROOT/cache/jupyter"
 mkdir -p "$MPLCONFIGDIR" "$NUMBA_CACHE_DIR" "$JUPYTER_RUNTIME_DIR"
 export PATH="$(dirname "$MPOWER_PYTHON"):$PATH"

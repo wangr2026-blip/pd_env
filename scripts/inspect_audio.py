@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Restartable bounded-memory inspection/extraction. Pilot by default; --full explicit."""
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from concurrent.futures.process import BrokenProcessPool
 import multiprocessing as mp
 import faulthandler
@@ -158,7 +158,8 @@ def main(default_stage='qc'):
         'sampling':'all source rows' if args.full else 'fixed-seed round-robin diagnosis/medication strata; unique participants first'})
     rows=[]
     # Keep task submission bounded to avoid a future per recording for large cohorts.
-    workers=args.workers or cfg['workers']
+    workers=args.workers if args.workers is not None else cfg['workers']
+    if workers < 1: raise ValueError('--workers must be positive')
     def make_pool():
         # Avoid forking an initialized Arrow/NumPy/native-library thread state.
         return ProcessPoolExecutor(max_workers=workers,mp_context=mp.get_context('spawn'),
@@ -173,16 +174,26 @@ def main(default_stage='qc'):
                 for process in (pool._processes or {}).values():
                     if process.is_alive(): process.terminate()
                 pool.shutdown(wait=True,cancel_futures=True)
-                for row in pending:
-                    try: value=isolated_call(work,row,cfg,args.stage,scope)
-                    except Exception as exc:
-                        value={'recording_id':row['recording_id'],'decode_status':'worker_error','feature_status':'error',
-                               'scope':scope,'error':f'isolated_native_worker_failure: {type(exc).__name__}: {exc}'}
-                    values.append(value)
+                # Independent child processes contain repeat crashes, while the
+                # thread coordinator keeps recovery parallel across allocated CPUs.
+                with ThreadPoolExecutor(max_workers=workers) as recovery:
+                    retries={recovery.submit(isolated_call,work,row,cfg,args.stage,scope):row for row in pending}
+                    for future in as_completed(retries):
+                        row=retries[future]
+                        try: value=future.result()
+                        except Exception as exc:
+                            value={'recording_id':row['recording_id'],'decode_status':'worker_error','feature_status':'error',
+                                   'scope':scope,'error':f'isolated_native_worker_failure: {type(exc).__name__}: {exc}'}
+                        values.append(value)
                 pool=make_pool()
             for value in values:
                 rows.append(value)
                 if value.get('error'): logging.error('%s %s',value['recording_id'],value['error'])
+            native_failures=sum(v.get('decode_status')=='worker_error' for v in values)
+            if native_failures >= max(2, len(batch)//2):
+                write_table(pd.DataFrame(rows),out/f'processed/{scope}_{args.stage}_checkpoint.parquet')
+                raise RuntimeError(f'Systematic native worker failures ({native_failures}/{len(batch)}); '
+                                   'checkpoint saved; fix the environment/extractor before resuming')
             interval=max(1,cfg.get('checkpoint_every',1000))
             checkpoint=(offset==0 or scope=='pilot' or len(rows)//interval>(len(rows)-len(batch))//interval or len(rows)==len(selected))
             if checkpoint:

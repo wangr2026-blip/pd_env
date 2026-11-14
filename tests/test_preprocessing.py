@@ -149,3 +149,64 @@ def test_native_crash_is_contained():
     from concurrent.futures.process import BrokenProcessPool
     with pytest.raises(BrokenProcessPool): isolated_call(synthetic_native_crash)
     assert isolated_call(abs,-7)==7
+
+
+@pytest.mark.parametrize('dtype', [np.float32, np.float64])
+def test_numpy_zcr_matches_librosa(dtype):
+    """Guard frame boundaries, thresholding, zero signs and edge centering."""
+    import librosa
+    from extract_acoustic_features import zero_crossing_rate_numpy
+    rng=np.random.default_rng(42)
+    signals=[rng.normal(size=16031), np.zeros(2000), np.ones(1),
+             np.tile([-1., -1e-10, -1e-11, -0., 0., 1e-11, 1e-10, 1.], 300)]
+    for y in signals:
+        y=y.astype(dtype)
+        for frame,hop in [(1024,160),(9,3),(1,1)]:
+            actual=zero_crossing_rate_numpy(y,frame,hop)
+            expected=librosa.feature.zero_crossing_rate(y,frame_length=frame,hop_length=hop)[0]
+            np.testing.assert_array_equal(actual,expected)
+
+
+def test_complete_feature_contract(cfg):
+    """All requested families survive together, with the expected units/coverage."""
+    from extract_acoustic_features import sensitivity, smile_extractor
+    from report_characterization import dictionary
+    sr=16000; t=np.arange(sr*2)/sr
+    y=(.15*np.sin(2*np.pi*145*t)+.01*np.sin(2*np.pi*290*t)).astype(np.float32)
+    f,status,_=extract(y,sr,cfg)
+    assert all(s=='ok' for s in status.values())
+    assert {p:sum(k.startswith(p) for k in f) for p in
+            ('praat_full__','praat_stable__','egemaps__','spectral__')} == {
+            'praat_full__':22,'praat_stable__':22,'egemaps__':88,'spectral__':52}
+    assert len(sensitivity(y,sr,cfg))==12
+    assert f['interval_end_s']-f['interval_start_s']>=.5
+    assert f['praat_full__nhr_from_mean_hnr']==pytest.approx(10**(-f['praat_full__hnr_db']/10))
+    units=dictionary(pd.DataFrame([f])).set_index('feature').units
+    assert units['praat_full__nhr_from_mean_hnr']=='dimensionless'
+    assert units['spectral__contrast_0_mean']=='dB'
+    assert smile_extractor() is smile_extractor()
+
+
+def test_systematic_worker_failures_stop_with_checkpoint(cfg,monkeypatch):
+    """A broken native environment must not grind through the entire dataset."""
+    import inspect_audio
+    import sys
+    root=cfg['output_root'];(root/'processed').mkdir();(root/'eda/diagnostics').mkdir(parents=True)
+    metadata=cfg['data_root']/cfg['metadata'];metadata.parent.mkdir(parents=True);metadata.write_text('synthetic')
+    pd.DataFrame({'recording_id':[f'synthetic-{i}' for i in range(10)]}).to_parquet(root/'processed/recording_manifest.parquet',index=False)
+    class Pool:
+        def __init__(self,**kwargs):pass
+        def shutdown(self,**kwargs):pass
+    def failures(batch,*args):
+        return ([{'recording_id':r['recording_id'],'decode_status':'worker_error',
+                  'feature_status':'error','error':'synthetic native failure'} for r in batch],[],False)
+    monkeypatch.setattr(inspect_audio,'configure',lambda _:cfg)
+    monkeypatch.setattr(inspect_audio,'version_info',lambda:{'synthetic':True})
+    monkeypatch.setattr(inspect_audio,'ProcessPoolExecutor',Pool)
+    monkeypatch.setattr(inspect_audio,'batch_results',failures)
+    monkeypatch.setattr(sys,'argv',['inspect_audio','--full','--stage','features','--workers','1'])
+    with pytest.raises(RuntimeError,match='Systematic native worker failures'):
+        inspect_audio.main()
+    checkpoint=pd.read_parquet(root/'processed/full_features_checkpoint.parquet')
+    assert len(checkpoint)==4 and checkpoint.decode_status.eq('worker_error').all()
+    assert not (root/'processed/full_acoustic_features.parquet').exists()
