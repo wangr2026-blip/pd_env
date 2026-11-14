@@ -1,5 +1,10 @@
 # Pretrained checkpoints and sustained-vowel inputs
 
+The maintained [preprocessing and frozen-model plan](FROZEN_MODEL_PREPROCESSING_PLAN.md)
+audits completed processing and specifies QC, model adapters, two-second windowing
+and validation-only selection before fine-tuning. Its endpoint-anchored window
+policy supersedes this guide's earlier general advice about residual tails.
+
 For exact commands to reproduce the downloads on another machine or through
 Slurm, start with [Download pretrained models](DOWNLOAD_PRETRAINED_MODELS.md).
 

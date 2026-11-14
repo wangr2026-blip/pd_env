@@ -13,6 +13,8 @@ To obtain pretrained weights on another machine, follow the
 [step-by-step download and Slurm guide](docs/DOWNLOAD_PRETRAINED_MODELS.md).
 It downloads nine public checkpoints at pinned revisions and verifies them
 without requiring PyTorch, Hugging Face login or access to participant data.
+For the QC audit, exact input/window policies and staged classifier training,
+see the [sustained-vowel preprocessing and frozen-model plan](docs/FROZEN_MODEL_PREPROCESSING_PLAN.md).
 
 ## Repository structure
 

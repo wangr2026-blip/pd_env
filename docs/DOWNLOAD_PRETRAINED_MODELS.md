@@ -1,5 +1,8 @@
 # Download the pretrained models on another machine
 
+For the QC audit, model-specific inputs and staged training after downloading,
+see the [preprocessing and frozen-model plan](FROZEN_MODEL_PREPROCESSING_PLAN.md).
+
 This guide reproduces the nine public checkpoint downloads verified in the
 local checkout. It downloads **12.02 GB** of weights and supporting files at
 the revisions in `configs/pretrained_models.lock.json`. Have at least **20 GB
