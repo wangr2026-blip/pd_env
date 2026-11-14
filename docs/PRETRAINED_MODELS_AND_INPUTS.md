@@ -75,4 +75,10 @@ An ordered experiment plan is:
 
 Local inspection of the downloaded safetensors headers counted 88,154,112 encoder tensor elements for Whisper Small, 307,216,384 for Medium and 636,968,960 for Large-v3. The stored encoder tensors are F32 in Small/Medium and F16 in Large-v3. These are checkpoint-header observations, not measured runtime memory or speed. Keep inference precision consistent when comparing sizes; similar on-disk file sizes do not imply similar capacity or compute.
 
-The current implementation still needs integration work before that expanded experiment. [frozen.py](../src/models/frozen.py) dispatches only `ast`, `whisper` and `wav2vec2`, assumes a tokenizer exists for non-AST models, and drops returned masks. Its singleton waveform handling reflects the original base-checkpoint assumption. [frozen_benchmark.yaml](../configs/frozen_benchmark.yaml) currently uses global five-second segments; [benchmark.py](../src/data/benchmark.py) has no HeAR-specific window adapter. The runner does not automatically discover these new local checkpoint paths. Downloading WavLM/HuBERT/HeAR or changing checkpoint names alone does not resolve those differences. Validate shapes, masks, padding and duration/pitch preservation with synthetic audio before processing the authorized cohort. No expanded-runner integration or clinical performance is established by these downloads.
+The expanded inventory is now integrated through
+[the local benchmark configuration](../configs/frozen_benchmark_local.yaml).
+The runner supports all nine public checkpoints and loads local pinned assets;
+WavLM/HuBERT use checkpoint-native normalization and masking. See the
+[local integration guide](LOCAL_PRETRAINED_BENCHMARK.md) for commands and
+validation scope. The original three-model/five-second configuration remains
+available explicitly. HeAR integration remains excluded pending access.

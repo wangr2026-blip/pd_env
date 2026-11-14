@@ -1,5 +1,11 @@
 # Frozen mPower speech benchmarks
 
+For the November 14 nine-checkpoint local integration and successful offline GPU
+smoke validation, see [the local benchmark guide](LOCAL_PRETRAINED_BENCHMARK.md).
+Earlier three-model/network-blocked status below is historical. The default
+CLI/Slurm config is now `configs/frozen_benchmark_local.yaml`; the original
+three-model configuration remains available explicitly.
+
 One runner supports AST (`MIT/ast-finetuned-audioset-10-10-0.4593`), Whisper
 (`openai/whisper-small`, encoder only), and wav2vec 2.0
 (`facebook/wav2vec2-base-960h`, backbone only). Backbone parameters are frozen and

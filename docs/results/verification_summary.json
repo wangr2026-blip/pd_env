@@ -26,22 +26,56 @@
   },
   "pretrained_models": {
     "MIT/ast-finetuned-audioset-10-10-0.4593": {
-      "loaded": false,
-      "reason": "Network blocked; requested assets not cached"
+      "loaded": true,
+      "pinned_revision": "f826b80d28226b62986cc218e5cec390b1096902",
+      "offline_gpu_smoke": "passed"
     },
-    "openai/whisper-small": {
-      "loaded": false,
-      "reason": "Network blocked; requested assets not cached"
+    "facebook/hubert-large-ll60k": {
+      "loaded": true,
+      "pinned_revision": "ff022d095678a2995f3c49bab18a96a9e553f782",
+      "offline_gpu_smoke": "passed"
     },
     "facebook/wav2vec2-base-960h": {
-      "loaded": false,
-      "reason": "Network blocked; requested assets not cached"
+      "loaded": true,
+      "pinned_revision": "22aad52d435eb6dbaf354bdad9b0da84ce7d6156",
+      "offline_gpu_smoke": "passed"
+    },
+    "facebook/wav2vec2-large-robust": {
+      "loaded": true,
+      "pinned_revision": "2493a2c576276145c3e066d9243b0e391fab673a",
+      "offline_gpu_smoke": "passed"
+    },
+    "microsoft/wavlm-base-plus": {
+      "loaded": true,
+      "pinned_revision": "4c66d4806a428f2e922ccfa1a962776e232d487b",
+      "offline_gpu_smoke": "passed"
+    },
+    "microsoft/wavlm-large": {
+      "loaded": true,
+      "pinned_revision": "c1423ed94bb01d80a3f5ce5bc39f6026a0f4828c",
+      "offline_gpu_smoke": "passed"
+    },
+    "openai/whisper-large-v3": {
+      "loaded": true,
+      "pinned_revision": "06f233fe06e710322aca913c1bc4249a0d71fce1",
+      "offline_gpu_smoke": "passed"
+    },
+    "openai/whisper-medium": {
+      "loaded": true,
+      "pinned_revision": "abdf7c39ab9d0397620ccaea8974cc764cd0953e",
+      "offline_gpu_smoke": "passed"
+    },
+    "openai/whisper-small": {
+      "loaded": true,
+      "pinned_revision": "973afd24965f72e36ca33b3055d56a652f456b4d",
+      "offline_gpu_smoke": "passed"
     }
   },
   "pretrained_baselines_completed": 0,
   "latest_new_slurm_submission": {
-    "job_id_returned": false,
-    "reason": "Controller hostname unresolved; retrying submission client interrupted"
+    "job_id": "27563234",
+    "state": "COMPLETED",
+    "task": "nine public pretrained offline GPU smoke checks"
   },
   "fixed_pilot": {
     "split_status": "provisional canonical assignments",
@@ -114,5 +148,15 @@
     "diagnostic_tests_passed": 3,
     "source_files_modified": false,
     "canonical_outputs_modified": false
+  },
+  "pretrained_smoke": {
+    "models_passed": 9,
+    "recordings_per_model": 6,
+    "heads": [
+      "logistic",
+      "mlp"
+    ],
+    "unit_checks_passed": 33,
+    "full_cohort_baselines_completed": 0
   }
 }

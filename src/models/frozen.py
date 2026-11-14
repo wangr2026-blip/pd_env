@@ -1,6 +1,8 @@
 """Checkpoint-native frontends and frozen encoders; no decoder or CTC inference."""
 from contextlib import nullcontext
 from pathlib import Path
+import json
+import os
 
 import numpy as np
 
@@ -8,34 +10,53 @@ import numpy as np
 class FrozenEncoder:
     def __init__(self, name, cfg, cache_dir):
         import torch
-        from transformers import AutoConfig, AutoFeatureExtractor, AutoTokenizer
-        from transformers import ASTModel, WhisperModel, Wav2Vec2Model
+        from transformers import AutoConfig, AutoFeatureExtractor
+        from transformers import ASTModel, WhisperModel, Wav2Vec2Model, WavLMModel, HubertModel
         self.torch = torch
         self.name = name
         self.cfg = cfg
         model_cfg = cfg['models'][name]
         kwargs = dict(cache_dir=str(cache_dir), revision=model_cfg['revision'])
         checkpoint = model_cfg['checkpoint']
+        source_provenance = None
+        if model_cfg.get('local_alias'):
+            root = Path(os.environ.get(cfg.get('model_root_env', 'MPOWER_MODEL_ROOT'),
+                                       str(cache_dir))).expanduser().resolve()
+            directory = root / 'checkpoints' / model_cfg['local_alias']
+            if not directory.is_dir():
+                raise FileNotFoundError(f'Verified local checkpoint missing: {directory}; run download_pretrained_models.py')
+            source_provenance = json.loads((directory / 'download_provenance.json').read_text())
+            # Verification timestamps change on rechecks; asset hashes/revisions do not.
+            source_provenance.pop('verified_at', None)
+            if (source_provenance['revision'] != model_cfg['revision'] or
+                    source_provenance['repo_id'] != model_cfg['checkpoint']):
+                raise ValueError('Local checkpoint provenance disagrees with pinned benchmark config')
+            checkpoint = str(directory)
+            kwargs = dict(local_files_only=True)
         config = AutoConfig.from_pretrained(checkpoint, **kwargs)
+        self.kind = config.model_type
         resolved = getattr(config, '_commit_hash', None)
-        if resolved:
+        if resolved and source_provenance is None:
             kwargs['revision'] = resolved
         self.feature = AutoFeatureExtractor.from_pretrained(checkpoint, **kwargs)
         if self.feature.sampling_rate != 16000:
             raise ValueError('Checkpoint frontend does not expect 16 kHz')
-        if name != 'ast':
-            # Cache tokenizer for reproducibility/future ASR, never use it as a speech input.
-            AutoTokenizer.from_pretrained(checkpoint, **kwargs)
-        cls = {'ast': ASTModel, 'whisper': WhisperModel, 'wav2vec2': Wav2Vec2Model}[name]
-        model = cls.from_pretrained(checkpoint, **kwargs)
-        self.model = model.get_encoder() if name == 'whisper' else model
+        classes = {'audio-spectrogram-transformer': ASTModel, 'whisper': WhisperModel,
+                   'wav2vec2': Wav2Vec2Model, 'wavlm': WavLMModel, 'hubert': HubertModel}
+        if self.kind not in classes:
+            raise ValueError(f'Unsupported backbone architecture: {self.kind}')
+        # Acoustic encoder inputs require a feature extractor, not an ASR tokenizer.
+        model = classes[self.kind].from_pretrained(checkpoint, **kwargs)
+        self.model = model.get_encoder() if self.kind == 'whisper' else model
         self.model.requires_grad_(False).eval()
         device = cfg['device']
         self.device = torch.device('cuda' if device == 'auto' and torch.cuda.is_available() else ('cpu' if device == 'auto' else device))
         self.model.to(self.device)
         self.amp = bool(cfg['mixed_precision'] and self.device.type == 'cuda')
         self.provenance = {'checkpoint': checkpoint, 'requested_revision': model_cfg['revision'],
-                           'resolved_revision': getattr(config, '_commit_hash', None),
+                           'resolved_revision': source_provenance['revision'] if source_provenance else resolved,
+                           'source_repository': model_cfg['checkpoint'], 'architecture': self.kind,
+                           'local_assets': source_provenance,
                            'feature_extractor': self.feature.to_dict(), 'config': config.to_dict(),
                            'device': str(self.device), 'mixed_precision': self.amp}
         if any(p.requires_grad for p in self.model.parameters()):
@@ -45,19 +66,24 @@ class FrozenEncoder:
         torch = self.torch
         # Group-normalized wav2vec2-base is sensitive to waveform padding. Single-item
         # forwards preserve exact valid inputs independently of batch composition.
-        if self.name == 'wav2vec2' and len(waveforms) > 1:
+        if self.kind in ('wav2vec2', 'wavlm', 'hubert') and len(waveforms) > 1:
             return [self([waveform])[0] for waveform in waveforms]
-        if self.name == 'whisper':
+        if self.kind == 'whisper':
             inputs = self.feature(waveforms, sampling_rate=16000, return_tensors='pt',
                                   padding='max_length', truncation=True, return_attention_mask=True)
+            valid_mel_frames = inputs.attention_mask.sum(-1)
             inputs = {'input_features': inputs.input_features}
-        elif self.name == 'ast':
+        elif self.kind == 'audio-spectrogram-transformer':
             inputs = self.feature(waveforms, sampling_rate=16000, return_tensors='pt')
             inputs = {'input_values': inputs.input_values}
         else:
-            inputs = self.feature(waveforms, sampling_rate=16000, return_tensors='pt', padding=True)
-            # This checkpoint's group-norm feature extractor requires no attention_mask.
-            inputs = {'input_values': inputs.input_values}
+            native = self.feature(waveforms, sampling_rate=16000, return_tensors='pt',
+                                  padding=True, return_attention_mask=True)
+            inputs = {'input_values': native.input_values}
+            # Group-normalized base models were pretrained without encoder masks;
+            # layer-normalized variants receive their checkpoint-specific masks.
+            if getattr(self.model.config, 'feat_extract_norm', 'group') != 'group':
+                inputs['attention_mask'] = native.attention_mask
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
         context = torch.autocast('cuda', dtype=torch.float16) if self.amp else nullcontext()
         with torch.inference_mode(), context:
@@ -67,7 +93,7 @@ class FrozenEncoder:
             layers = {}
             for layer in self.cfg['layers']:
                 hidden = output.hidden_states[layer][index]
-                if self.name == 'ast':
+                if self.kind == 'audio-spectrogram-transformer':
                     # AST has CLS/distillation tokens followed by frequency-major patches.
                     hidden = hidden[2:]
                     c = self.model.config
@@ -76,10 +102,13 @@ class FrozenEncoder:
                     valid_frames = max(1, (len(waveform) - 400) // 160 + 1)
                     valid_time = max(1, min(time_patches, (valid_frames - c.patch_size) // c.time_stride + 1))
                     hidden = hidden.reshape(frequency_patches, time_patches, -1)[:, :valid_time].reshape(-1, hidden.shape[-1])
-                elif self.name == 'whisper':
+                elif self.kind == 'whisper':
                     # Encoder stride is 2 over 10 ms Mel frames; remove trailing padding tokens.
-                    valid = min(hidden.shape[0], (len(waveform) // self.feature.hop_length + 1) // 2)
+                    valid = min(hidden.shape[0], (int(valid_mel_frames[index]) + 1) // 2)
                     hidden = hidden[:max(1, valid)]
+                elif self.kind in ('wav2vec2', 'wavlm', 'hubert'):
+                    valid = int(self.model._get_feat_extract_output_lengths(len(waveform)))
+                    hidden = hidden[:max(1, min(hidden.shape[0], valid))]
                 layers[str(layer)] = hidden.float().cpu().numpy()
             result.append(layers)
         return result

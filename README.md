@@ -63,8 +63,8 @@ Use Python 3.12 and install the requirements appropriate to the task:
 python -m pip install -r requirements-preprocessing.txt
 python -m pip install -r requirements-benchmark.txt
 python -m pytest -q tests/test_frozen_benchmark.py
-python scripts/run_frozen_benchmark.py --model all --config configs/frozen_benchmark.yaml --prepare-only
-python scripts/run_frozen_benchmark.py --model all --config configs/frozen_benchmark.yaml --smoke-test
+python scripts/run_frozen_benchmark.py --model all --config configs/frozen_benchmark_local.yaml --prepare-only
+python scripts/run_frozen_benchmark.py --model all --config configs/frozen_benchmark_local.yaml --smoke-test
 ```
 
 Tests exercising PyTorch require the benchmark dependencies. Real data require
@@ -95,19 +95,14 @@ and the [complete acoustic feature catalog](docs/ACOUSTIC_FEATURES.md) for the
 
 ## Current status
 
-The full regression suite passed 28 tests; 19 overlapping targeted checks were
-also rerun and passed. Tiny random AST, Whisper and wav2vec2 backbones passed
-real-recording integration checks. Requested pretrained weights have **not**
-loaded: shell network connections were denied, and the assets were not cached.
-No pretrained baseline experiment completed. The fixed pilot has 56 participants
-with provisional participant-disjoint assignments and only eight test people.
-Smoke metrics are execution checks, not validated predictive performance.
-
-Nine public checkpoints have since been downloaded and hash-verified in a
-separate local checkout (12.02 GB). This does not establish availability on HPC
-or successful model inference. The [download guide](docs/DOWNLOAD_PRETRAINED_MODELS.md)
-reproduces that asset download; the [input guide](docs/PRETRAINED_MODELS_AND_INPUTS.md)
-explains ten-second vowel inputs and the remaining runner integration work.
+All nine public pretrained checkpoints are now downloaded and hash-verified on
+HPC (12.02 GB). Offline GPU smoke checks passed for all nine, using six real
+recordings per checkpoint and both classifier heads. Thirty-three benchmark,
+download and adapter unit checks passed. These are execution checks; no full-
+cohort pretrained experiment or validated predictive performance is claimed.
+See the [local benchmark guide](docs/LOCAL_PRETRAINED_BENCHMARK.md) and
+[aggregate validation summary](docs/results/pretrained_integration_summary.json).
+HeAR remains excluded pending access.
 
 Full acoustic preprocessing completed: 64,973/65,022 recordings succeeded.
 The remaining 49 files match their malformed/empty Synapse source objects;

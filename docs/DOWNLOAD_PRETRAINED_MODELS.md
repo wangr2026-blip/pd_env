@@ -218,11 +218,13 @@ checkpoint directory**, for example
 Use each model's own processor and architecture class. See the
 [input and local-loading guide](PRETRAINED_MODELS_AND_INPUTS.md) for an example.
 
-The existing benchmark runner does not automatically discover this directory.
-Its YAML currently names remote checkpoint IDs and it supports AST, Whisper
-and wav2vec2 only. WavLM/HuBERT need adapters, and waveform normalization/masks
-need checkpoint-specific handling. Download success therefore establishes
-asset availability, not successful inference or a completed Parkinson model.
+The runner now supports all nine public checkpoints through
+`configs/frozen_benchmark_local.yaml`, which is its default configuration.
+It resolves pinned aliases under `$MPOWER_MODEL_ROOT/checkpoints/` and loads
+locally. WavLM/HuBERT adapters, checkpoint-specific normalization and masks,
+and valid-token pooling are implemented. See the
+[local benchmark guide](LOCAL_PRETRAINED_BENCHMARK.md) for setup and smoke-test
+commands. Asset verification and inference validation remain separate checks.
 
 ## If a step fails
 

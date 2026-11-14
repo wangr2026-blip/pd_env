@@ -33,7 +33,7 @@ projects/
       cache/                        preprocessing caches
       archive/                      earlier EDA snapshots
     mpower_benchmarks/              MPOWER_BENCHMARK_ROOT
-      models/                       intended pretrained HF cache; currently unavailable
+      models/                       nine pinned public checkpoints verified on HPC
       segments/                     waveform caches when extraction succeeds
       activations/                  per-model hidden-state caches
       runs/                         real pretrained experiment outputs, when successful
@@ -120,3 +120,8 @@ This does not grant Python downloads or shell Git/Slurm network access.
 The network observations above describe the earlier sandbox session. During the
 November 13 reorganization, Slurm read access succeeded outside the sandbox;
 see [the audit](REORGANIZATION_AUDIT.md). This does not verify model downloads.
+
+November 14 update: all nine public checkpoints are now downloaded and verified
+on HPC. Offline GPU smoke checks passed for all nine; see
+[local pretrained integration](LOCAL_PRETRAINED_BENCHMARK.md). Earlier network
+failures and missing-model observations above describe historical attempts.

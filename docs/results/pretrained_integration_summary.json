@@ -1,0 +1,90 @@
+{
+  "snapshot_local_date": "2026-11-14",
+  "downloaded_models": 9,
+  "verified_models": 9,
+  "total_bytes": 12018426907,
+  "total_files": 66,
+  "slurm_job_id": "27563234",
+  "slurm_state": "COMPLETED",
+  "elapsed": "00:02:11",
+  "offline_inference": true,
+  "models": {
+    "ast_audioset": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    },
+    "hubert_large": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    },
+    "wav2vec2_base_960h": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    },
+    "wav2vec2_large_robust": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    },
+    "wavlm_base_plus": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    },
+    "wavlm_large": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    },
+    "whisper_large_v3": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    },
+    "whisper_medium": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    },
+    "whisper_small": {
+      "status": "passed",
+      "recordings": 6,
+      "heads": [
+        "logistic",
+        "mlp"
+      ]
+    }
+  },
+  "gpu": "NVIDIA A100 80GB",
+  "clinical_performance_validated": false,
+  "full_cohort_training_run": false,
+  "hear": "excluded_pending_access",
+  "unit_checks_passed": 33
+}

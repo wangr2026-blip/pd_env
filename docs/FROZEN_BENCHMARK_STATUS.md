@@ -1,5 +1,11 @@
 # Execution status — November 12, 2026
 
+For the November 14 nine-checkpoint local integration and successful offline GPU
+smoke validation, see [the local benchmark guide](LOCAL_PRETRAINED_BENCHMARK.md).
+Earlier three-model/network-blocked status below is historical. The default
+CLI/Slurm config is now `configs/frozen_benchmark_local.yaml`; the original
+three-model configuration remains available explicitly.
+
 Implementation is present for all three frozen speech backbones, both heads,
 mean/statistical/learned attention pooling, participant-disjoint split reuse,
 reusable waveform/activation caches, metrics, artifact export, comparison CLI,

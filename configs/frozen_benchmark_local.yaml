@@ -1,0 +1,79 @@
+# Nine pinned public checkpoints; run downloader verification before inference.
+seed: 20261112
+threads: 4
+device: auto
+mixed_precision: true
+data_root_env: MPOWER_DATA_ROOT
+eda_root_env: MPOWER_OUTPUT_ROOT
+benchmark_root_env: MPOWER_BENCHMARK_ROOT
+manifest: null
+cohort: B
+quality:
+  min_duration_s: 2
+  reject_flags:
+  - flag_near_silent
+  - flag_short
+audio:
+  sample_rate: 16000
+  segment_seconds: 10
+  hop_seconds: 10
+  max_decode_seconds: 180
+  max_segments: 12
+batch_size: 1
+participant_aggregation: mean
+pooling: mean
+layers:
+- -1
+heads:
+- logistic
+- mlp
+head:
+  max_iter: 300
+  hidden_dim: 64
+  epochs: 30
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 32
+split_fractions:
+- 0.7
+- 0.15
+- 0.15
+smoke_participants_per_class: 1
+models:
+  ast_audioset:
+    checkpoint: MIT/ast-finetuned-audioset-10-10-0.4593
+    revision: f826b80d28226b62986cc218e5cec390b1096902
+    local_alias: ast_audioset
+  hubert_large:
+    checkpoint: facebook/hubert-large-ll60k
+    revision: ff022d095678a2995f3c49bab18a96a9e553f782
+    local_alias: hubert_large
+  wav2vec2_base_960h:
+    checkpoint: facebook/wav2vec2-base-960h
+    revision: 22aad52d435eb6dbaf354bdad9b0da84ce7d6156
+    local_alias: wav2vec2_base_960h
+  wav2vec2_large_robust:
+    checkpoint: facebook/wav2vec2-large-robust
+    revision: 2493a2c576276145c3e066d9243b0e391fab673a
+    local_alias: wav2vec2_large_robust
+  wavlm_base_plus:
+    checkpoint: microsoft/wavlm-base-plus
+    revision: 4c66d4806a428f2e922ccfa1a962776e232d487b
+    local_alias: wavlm_base_plus
+  wavlm_large:
+    checkpoint: microsoft/wavlm-large
+    revision: c1423ed94bb01d80a3f5ce5bc39f6026a0f4828c
+    local_alias: wavlm_large
+  whisper_large_v3:
+    checkpoint: openai/whisper-large-v3
+    revision: 06f233fe06e710322aca913c1bc4249a0d71fce1
+    local_alias: whisper_large_v3
+  whisper_medium:
+    checkpoint: openai/whisper-medium
+    revision: abdf7c39ab9d0397620ccaea8974cc764cd0953e
+    local_alias: whisper_medium
+  whisper_small:
+    checkpoint: openai/whisper-small
+    revision: 973afd24965f72e36ca33b3055d56a652f456b4d
+    local_alias: whisper_small
+model_root_env: MPOWER_MODEL_ROOT

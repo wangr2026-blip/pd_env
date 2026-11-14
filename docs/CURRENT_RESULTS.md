@@ -17,7 +17,13 @@ preprocessing tests and four 32-recording runs with 1/4/8/16 workers. The
 historical failed checkpoint described below remains preserved as evidence;
 it has been superseded by the completed retry for current acoustic results.
 
-## Verification
+The nine public pretrained checkpoints have now loaded and passed offline
+GPU end-to-end smoke checks (job 27563234). Each used six real recordings and
+both heads. See [local pretrained integration](LOCAL_PRETRAINED_BENCHMARK.md).
+The historical network-blocked attempts below predate this successful run;
+no full-cohort pretrained baseline or validated prediction is claimed.
+
+## Historical verification
 
 | Check | Result |
 |---|---|

@@ -17,8 +17,8 @@ sys.path.insert(0, str(REPO / 'scripts'))
 
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--model', choices=['ast', 'whisper', 'wav2vec2', 'all'], default='all')
-    p.add_argument('--config', default=str(REPO / 'configs/frozen_benchmark.yaml'))
+    p.add_argument('--model', default='all')
+    p.add_argument('--config', default=str(REPO / 'configs/frozen_benchmark_local.yaml'))
     p.add_argument('--smoke-test', action='store_true', help='Small real-recording end-to-end run; no performance claims')
     p.add_argument('--prepare-only', action='store_true', help='Download/load checkpoints without accessing recordings')
     p.add_argument('--data-smoke', action='store_true', help='Validate real manifests and decoding without pretrained models')
@@ -143,7 +143,9 @@ def main(argv=None):
             failed = True
             report['data_smoke'] = {'status': 'failed', 'error': f'{type(exc).__name__}: {exc}'}
     else:
-        names = ['ast', 'whisper', 'wav2vec2'] if args.model == 'all' else [args.model]
+        names = list(cfg['models']) if args.model == 'all' else [args.model]
+        if any(name not in cfg['models'] for name in names):
+            raise ValueError(f'Choose a configured model: {list(cfg["models"])}')
         for name in names:
             print(f'Starting {name}', flush=True)
             initialize(cfg)
