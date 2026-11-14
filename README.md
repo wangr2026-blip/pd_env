@@ -118,3 +118,8 @@ proposes calibrated technical weights, robust scalar aggregation and equal
 participant/day contributions. Medication state and demographic/device effects
 are separate analyses. These weights and weighted loss are **not yet fitted or
 implemented** in the current runner.
+
+The [frozen development protocol](docs/FROZEN_TESTING_IMPLEMENTATION.md) implements
+shared source spans, native-channel QC, both context conditions, native AST
+pooling, pooled caches and participant-balanced validation-only model selection.
+Use `scripts/submit_frozen_testing.py` for the dependency-controlled multi-job run.

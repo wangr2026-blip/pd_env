@@ -1,5 +1,11 @@
 # Sustained-vowel preprocessing and frozen-model plan
 
+Implementation update: the frozen-development stages are implemented in the
+[execution guide](FROZEN_TESTING_IMPLEMENTATION.md), with immutable development
+snapshots and dependent Slurm experiments. The original proposal/audit below
+remains historical design context. Fine-tuning, validated task/near-duplicate
+release review and final sealed-test evaluation remain later gates.
+
 Yes: first hold each pretrained encoder fixed, train comparable classifier heads, select promising pipelines on development participants, then fine-tune a prespecified shortlist. This document distinguishes the implemented integration from remaining preprocessing/evaluation work. Source inspection reflects repository snapshot `84519b7` on November 14, 2026; private HPC artifacts were not accessed in this audit.
 
 The latest repository evidence **does establish completed full acoustic preprocessing**: job 27554188 finished in 3:22:34, with 64,973 successful decodes/extractions among 65,022 source recordings and 49 failures. Cohorts, reports and the notebook were generated. A subsequent audit found all 49 failed objects matched Synapse sizes/MD5 checksums and yielded zero samples under normal and tolerant decoding. Retain their failure status and missing features; fetching the same source object cannot restore absent audio. This supersedes the earlier running-job snapshot and native-worker incident. It does not establish pretrained-model inference, validated QC cutoffs or final release splits. ([Current results](../docs/CURRENT_RESULTS.md#L8), [failed-file audit](../docs/FAILED_AUDIO_AUDIT.md#L1))

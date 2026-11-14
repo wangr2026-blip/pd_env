@@ -191,3 +191,67 @@ def pool(tokens, kind):
     if kind == 'statistical':
         return np.stack([np.concatenate([x.mean(0), x.std(0)]) for x in tokens])
     raise ValueError(f'Unknown fixed pooling: {kind}')
+
+
+class ProtocolEncoder(FrozenEncoder):
+    """Selective named taps, native AST pooling, pooled vectors only."""
+    def represent(self, waveform, taps=None):
+        torch=self.torch
+        taps=taps or (['native_pooler','patches'] if self.kind=='audio-spectrogram-transformer'
+                      else ['last_hidden','block_middle'])
+        feature_options={'sampling_rate':16000,'return_tensors':'pt'}
+        length=len(waveform);captures={};handles=[]
+        def capture(name,transpose=False):
+            def hook(module,args,output):
+                value=output[0] if isinstance(output,tuple) else output
+                captures[name]=value.transpose(1,2) if transpose else value
+            return hook
+        def before(name):
+            def hook(module,args):captures[name]=args[0]
+            return hook
+        if self.kind in ('wav2vec2','wavlm','hubert'):
+            native=self.feature([waveform],padding=False,return_attention_mask=True,**feature_options)
+            inputs={'input_values':native.input_values}
+            if getattr(self.model.config,'feat_extract_norm','group')!='group':inputs['attention_mask']=native.attention_mask
+            if 'conv_raw' in taps:handles.append(self.model.feature_extractor.register_forward_hook(capture('conv_raw',True)))
+            if 'conv_normalized' in taps:handles.append(self.model.feature_projection.projection.register_forward_pre_hook(before('conv_normalized')))
+            layers=self.model.encoder.layers
+            if 'encoder_input' in taps:handles.append(layers[0].register_forward_pre_hook(before('encoder_input')))
+        elif self.kind=='whisper':
+            native=self.feature([waveform],padding='max_length',truncation=True,return_attention_mask=True,do_normalize=False,**feature_options)
+            inputs={'input_features':native.input_features}
+            valid_whisper=(int(native.attention_mask[0].sum())+1)//2
+            layers=self.model.layers
+        else:
+            native=self.feature([waveform],**feature_options);inputs={'input_values':native.input_values}
+            layers=self.model.encoder.layer
+        middle=max(1,len(layers)//2)
+        if 'block_middle' in taps:handles.append(layers[middle-1].register_forward_hook(capture('block_middle')))
+        try:
+            with torch.inference_mode():
+                output=self.model(**{k:v.to(self.device) for k,v in inputs.items()},output_hidden_states=False,return_dict=True)
+                captures['last_hidden']=output.last_hidden_state
+                result={}
+                for tap in taps:
+                    if tap=='native_pooler':
+                        if self.kind!='audio-spectrogram-transformer':raise ValueError('native_pooler applies to AST')
+                        result['native_pooler']=output.pooler_output[0].float().cpu().numpy();continue
+                    sequence=captures['last_hidden'] if tap=='patches' else captures[tap]
+                    sequence=sequence[0]
+                    if self.kind=='audio-spectrogram-transformer':
+                        sequence=sequence[2:];c=self.model.config
+                        nt=(c.max_length-c.patch_size)//c.time_stride+1;nf=(c.num_mel_bins-c.patch_size)//c.frequency_stride+1
+                        frames=max(1,(length-400)//160+1);valid=max(1,min(nt,(frames-c.patch_size)//c.time_stride+1))
+                        sequence=sequence.reshape(nf,nt,-1)[:,:valid].reshape(-1,sequence.shape[-1])
+                    elif self.kind=='whisper':sequence=sequence[:max(1,valid_whisper)]
+                    else:
+                        valid=int(self.model._get_feat_extract_output_lengths(length));sequence=sequence[:max(1,valid)]
+                    sequence=sequence.float()
+                    mean=sequence.mean(0);sd=sequence.std(0,correction=0)
+                    name=f'block_{middle}' if tap=='block_middle' else tap
+                    result[name+'/mean']=mean.cpu().numpy()
+                    result[name+'/mean_sd']=torch.cat([mean,sd]).cpu().numpy()
+                if any(not np.isfinite(v).all() for v in result.values()):raise ValueError('Nonfinite pooled features')
+                return result
+        finally:
+            for handle in handles:handle.remove()

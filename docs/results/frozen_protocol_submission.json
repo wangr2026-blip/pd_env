@@ -1,0 +1,31 @@
+{
+  "source_plan_commit": "122e451",
+  "validation_job": "27563989",
+  "validation_state": "COMPLETED",
+  "validation_elapsed": "00:06:23",
+  "validation_recordings": 64,
+  "validation_model_context_combinations": 18,
+  "validation_pipelines": 364,
+  "encoder_state_unchanged": true,
+  "test_labels_opened": false,
+  "unit_tests_passed": 52,
+  "preparation_job": "27564044",
+  "gpu_array_job": "27564045",
+  "gpu_tasks": 18,
+  "max_gpu_concurrency": 3,
+  "summary_job": "27564046",
+  "experiment": "protocol_experiments/20261114T074847Z",
+  "development_eligible_recordings": 53122,
+  "development_eligible_participants": 4126,
+  "metadata_feasibility_exclusions": 8,
+  "full_experiments_completed": false,
+  "versions": {
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "scipy": "1.14.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.15.0",
+    "transformers": "4.57.6"
+  },
+  "release_status": "provisional development cohort; task and near-duplicate review pending; fine-tuning and final test deferred"
+}
