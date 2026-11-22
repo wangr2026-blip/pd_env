@@ -1,0 +1,15 @@
+# mPower sustained phonation, development (train+val) participants only; test sealed.
+# Requires MPOWER_OUTPUT_ROOT (mpower_phase1) and MPOWER_BENCHMARK_ROOT (outputs).
+extends: base.yaml
+run_name: mpower_vowel_v1
+output_root: ${MPOWER_BENCHMARK_ROOT}/interpretability
+
+dataset:
+  name: mpower
+  language: en
+  task: sustained_vowel
+  source_cohort: A              # labeled + decoded; this pipeline applies its own criteria
+  output_root_env: MPOWER_OUTPUT_ROOT
+
+cohort:
+  qc_source: precomputed        # reuse completed decode/duration/Praat voicing (pitch_detected_s)

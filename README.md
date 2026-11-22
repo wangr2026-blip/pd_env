@@ -33,6 +33,7 @@ src/
   models/      frozen AST, Whisper encoder and wav2vec2 backbone
   training/    logistic/MLP heads and learned attention pooling
   evaluation/  recording/participant metrics and calibration
+pipeline/      config-driven layer-wise interpretability pipeline (see pipeline/README.md)
 notebooks/     two executed aggregate reports; original private-analysis template
 tests/        synthetic correctness tests and opt-in real integration tests
 docs/         methods, aggregate results, weighting plan and run history

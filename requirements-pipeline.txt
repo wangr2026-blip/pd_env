@@ -1,0 +1,4 @@
+# Interpretability pipeline (pipeline/). Python 3.12 tested.
+# Stage 0 + synthetic data need only these; encoder/probe stages will add pins.
+-r requirements-preprocessing.txt
+scikit-learn>=1.4,<2

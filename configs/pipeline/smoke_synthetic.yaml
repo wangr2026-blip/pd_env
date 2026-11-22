@@ -1,0 +1,18 @@
+# Laptop/CI smoke test: synthetic vowels with planted acoustics, no participant data.
+#   export PIPELINE_OUTPUT_ROOT=/tmp/pd_pipeline_smoke
+#   python -m pipeline.cohort --config configs/pipeline/smoke_synthetic.yaml
+extends: base.yaml
+run_name: smoke_synthetic
+output_root: ${PIPELINE_OUTPUT_ROOT}
+
+dataset:
+  name: synthetic
+  language: en
+  task: sustained_vowel
+  params:
+    n_participants: 60
+    duration_s: [4.0, 6.0]
+
+matched:
+  age_range: [40, 80]           # wider than mPower so the 60-person toy cohort matches anyone
+  age_bin_width: 10

@@ -1,0 +1,33 @@
+# Shared defaults for the interpretability pipeline. Dataset configs extend this.
+# Every methodological choice is documented in pipeline/README.md.
+seed: 20261112
+
+cohort:
+  qc_source: compute            # compute (decode + Praat voicing) | precomputed (dataset columns)
+  workers: 1
+  require: [label, age, sex]    # missing any of these excludes the recording
+  age_range: [18, 100]          # valid adult ages; outside = excluded
+  task_filter: [sustained_phonation]
+  min_duration_s: 2.0           # research feasibility rule (matches existing protocol)
+  min_voiced_s: 1.0             # below = "no voiced audio"; excluded, never trimmed.
+                                # Praat finds ~0.5-0.7 s spurious pitch in 5 s of whisper-like
+                                # noise, so 0.5 s does not separate unvoiced clips (README).
+  voicing: {pitch_floor_hz: 75, pitch_ceiling_hz: 500, time_step_s: 0.01}
+  medication_filter:            # null keeps all; a list keeps only those timepoint responses
+    pd: null                    # e.g. ["Immediately before Parkinson medication"]
+    control: null
+
+folds:
+  n_splits: 5
+  group: duplicate_component    # duplicate-audio-linked participants never split across folds
+  stratify: [label]             # may add sex and/or age_bin (requires age_bins)
+  age_bins: null                # e.g. [0, 50, 65, 120]
+
+matched:
+  enabled: true
+  age_range: [50, 80]
+  age_bin_width: 5
+  by: [sex]
+
+aggregation:
+  participant: mean             # recording -> participant probability (mean | median)
